@@ -32,7 +32,7 @@
 # https://github.com/ilyaevseev/jenkins2git
 # https://gist.github.com/cenkalti/5089392
 
-JENKINS_HOME=/var/lib/jenkins
+# JENKINS_HOME=/var/lib/jenkins
 
 REPO_URL=https://updates.jenkins.io
 SCR_NAME=jenkins.plugins.restore.sh
