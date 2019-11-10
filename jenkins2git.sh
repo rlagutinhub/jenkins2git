@@ -118,15 +118,14 @@ function plugins_gen(){
                     plugins_check $SHORT_NAME $PLUGIN_VERSION $PLUGIN_SHA1SUM
 
                     if [ $? -eq 0 ]; then
-                        echo "curl -k -sS -L \"${REPO_URL}/download/plugins/${SHORT_NAME}/${PLUGIN_VERSION}/${SHORT_NAME}.hpi\" -o \"${PLUGIN_FILE}\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
-                        if [ ! -z $PLUGIN_DISABLED ]; then echo "touch \"$PLUGIN_DISABLED\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}; fi
-                        if [ ! -z $PLUGIN_PINNED ]; then echo "touch \"$PLUGIN_PINNED\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}; fi
-
+                        echo "echo download:${SHORT_NAME}.${PLUGIN_VERSION}, checksum:${PLUGIN_SHA1SUM} - OK" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
                     else
-                        echo "# curl -k -sS -L \"${REPO_URL}/download/plugins/${SHORT_NAME}/${PLUGIN_VERSION}/${SHORT_NAME}.hpi\" -o \"${PLUGIN_FILE}\" # plugin not found" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
-                        if [ ! -z $PLUGIN_DISABLED ]; then echo "# touch \"$PLUGIN_DISABLED\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}; fi
-                        if [ ! -z $PLUGIN_PINNED ]; then echo "# touch \"$PLUGIN_PINNED\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}; fi
+                        echo "echo download:${SHORT_NAME}.${PLUGIN_VERSION}, checksum:${PLUGIN_SHA1SUM} - FAIL" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
                     fi
+
+                    echo "curl -k -L --progress-bar \"${REPO_URL}/download/plugins/${SHORT_NAME}/${PLUGIN_VERSION}/${SHORT_NAME}.hpi\" -o \"${PLUGIN_FILE}\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
+                    if [ ! -z $PLUGIN_DISABLED ]; then echo "touch \"$PLUGIN_DISABLED\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}; fi
+                    if [ ! -z $PLUGIN_PINNED ]; then echo "touch \"$PLUGIN_PINNED\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}; fi
 
                 fi
 
