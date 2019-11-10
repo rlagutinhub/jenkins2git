@@ -10,7 +10,7 @@
 # https://jenkins.io/doc/book/managing/plugins/
 # https://wiki.jenkins.io/display/JENKINS/Administering+Jenkins
 
-# JENKINS_HOME
+# JENKINS_HOME1
 #  +- config.xml     (jenkins root configuration)
 #  +- *.xml          (other site-wide configuration files)
 #  +- userContent    (files in this directory will be served under your http://server/userContent/)
