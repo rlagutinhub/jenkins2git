@@ -44,6 +44,37 @@ cat ~/.ssh/id_rsa.pub
 * Settings => Members: decrease Jenkins permissions from Maintainer to Developer
 * Settings => Repository => Protected branches: master => Allow to push: change from Maintainers to Maintainers+Developers
 
+### Quick setup:
+
+```
+1. su -s /bin/bash jenkins
+2. cd /var/lib/jenkins && git init
+3. git config --global user.name Jenkins
+4. git config --global user.email "jenkins@$(hostname -f)"
+5. git config --global -l
+6. git remote add origin git@git.dev.mta4.ru:mta4ru/jenkins-configs.git
+7. git remote show origin
+8. Exec jenkins job
+
+
+1. systemctl stop jenkins
+2. su -s /bin/bash jenkins
+3. cd /var/lib/jenkins && rm -rf *
+4. rm -rf .git .gitconfig
+5. git init
+6. git config --global user.name Jenkins
+7. git config --global user.email "jenkins@$(hostname -f)"
+8. git config --global -l
+9. git remote add origin git@git.dev.mta4.ru:mta4ru/jenkins-configs.git
+10. git remote show origin
+11. git pull origin master
+12. cd plugins && sh jenkins.plugins.restore.sh
+13. # find . -name "*.hpi" -exec bash -c 'mv "$1" "${1%.hpi}".jpi' - '{}' \;
+14. exit
+15. systemctl start jenkins
+16. tail -f /var/log/jenkins/jenkins.log
+```
+
 ### See also:
 
 * https://github.com/sue445/jenkins-backup-script
