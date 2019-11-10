@@ -118,9 +118,9 @@ function plugins_gen(){
                     plugins_check $SHORT_NAME $PLUGIN_VERSION $PLUGIN_SHA1SUM
 
                     if [ $? -eq 0 ]; then
-                        echo "echo download:${SHORT_NAME}.${PLUGIN_VERSION}, checksum:${PLUGIN_SHA1SUM} - OK" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
+                        echo "echo ${SHORT_NAME}.${PLUGIN_VERSION} [checksum: ${PLUGIN_SHA1SUM} OK]" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
                     else
-                        echo "echo download:${SHORT_NAME}.${PLUGIN_VERSION}, checksum:${PLUGIN_SHA1SUM} - FAIL" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
+                        echo "echo ${SHORT_NAME}.${PLUGIN_VERSION} [checksum: ${PLUGIN_SHA1SUM} FAIL]" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
                     fi
 
                     echo "curl -k -L --progress-bar \"${REPO_URL}/download/plugins/${SHORT_NAME}/${PLUGIN_VERSION}/${SHORT_NAME}.hpi\" -o \"${PLUGIN_FILE}\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
