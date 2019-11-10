@@ -46,4 +46,6 @@ cat ~/.ssh/id_rsa.pub
 
 ### See also:
 
-* https://gist.github.com/cenkalti/5089392 -- my work is based on it.
+* https://github.com/sue445/jenkins-backup-script
+* https://github.com/ilyaevseev/jenkins2git
+* https://gist.github.com/cenkalti/5089392
