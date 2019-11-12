@@ -61,9 +61,11 @@ cat ~/.ssh/id_rsa.pub
 ```
 systemctl stop jenkins
 su -s /bin/bash jenkins
+
+cp -rp /var/lib/jenkins /var/lib/jenkins.$(date +%F)
 cd /var/lib/jenkins
 
-rm -rf * # or /var/lib/jenkins /var/lib/jenkins.$(date +%F)
+rm -rf *
 rm -rf .git*
 
 git init
@@ -95,9 +97,11 @@ tail -f /var/log/jenkins/jenkins.log
 ```
 systemctl stop jenkins
 su -s /bin/bash jenkins
+
+cp -rp /var/lib/jenkins /var/lib/jenkins.$(date +%F)
 cd /var/lib/jenkins
 
-rm -rf * # or /var/lib/jenkins /var/lib/jenkins.$(date +%F)
+rm -rf *
 rm -rf .git*
 
 git init
