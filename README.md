@@ -24,6 +24,9 @@ git config --global user.name Jenkins
 git config --global user.email "jenkins@$(hostname -f)"
 git config --global -l
 
+git remote add origin PASTE_HERE_REPO_LINK_FROM_GITLAB
+git remote show origin # approve host key verification
+
 cat <<EOF > .gitignore
 .*
 !/.gitignore
@@ -31,9 +34,9 @@ EOF
 
 git add .gitignore
 git commit -m 'Jenkins init commit'
+git status
 
-git remote add origin PASTE_HERE_REPO_LINK_FROM_GITLAB
-git remote show origin # approve host key verification
+git push origin master
 ```
 
 ### Gitlab:
