@@ -2,7 +2,7 @@
 
 * Periodic backup of Jenkins configs to Git
 
-### Create Jenkins user ssh keys:
+### Create user ssh keys from command line on Jenkins host:
 
 ```
 su -s /bin/bash jenkins
@@ -62,12 +62,12 @@ git push origin master
 * Paste the contents of [jenkins2git.sh](jenkins2git.sh)
 * Save
 
-### Gitlab:
+### Protect repository in Gitlab::
 
 * Settings => Members: decrease Jenkins permissions from Maintainer to Developer
 * Settings => Repository => Protected branches: master => Allow to push: change from Maintainers to Maintainers+Developers
 
-### Restore to current (last) commit:
+### Restore to current (last) commit from command line on Jenkins host:
 
 ```
 systemctl stop jenkins
@@ -103,7 +103,7 @@ systemctl start jenkins
 tail -f /var/log/jenkins/jenkins.log
 ```
 
-### Restore to old commit:
+### Restore to old commit from command line on Jenkins host:
 
 ```
 systemctl stop jenkins
