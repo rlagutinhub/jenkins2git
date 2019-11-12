@@ -2,7 +2,7 @@
 
 # NAME:   JENKINS2GIT.SH
 # DESC:   BACKUP JENKINS MASTER CONFIG TO GIT
-# DATE:   10-11-2019
+# DATE:   12-11-2019
 # LANG:   BASH
 # AUTHOR: LAGUTIN R.A.
 # EMAIL:  RLAGUTIN@MTA4.RU
@@ -33,13 +33,15 @@
 # https://gist.github.com/cenkalti/5089392
 
 # JENKINS_HOME=/var/lib/jenkins
-
 REPO_URL=https://updates.jenkins.io
-SCR_NAME=jenkins.plugins.restore.sh
+
+SCR_NAME=_jenkins.plugins.get.sh
+SCR_FOLD=${JENKINS_HOME}/plugins
+SCR_PATH=${SCR_FOLD}/${SCR_NAME}
 
 function plugins_col(){
 
-    if [ ! -r "${JENKINS_HOME}/plugins/${SCR_NAME}" ]; then exit 1; fi
+    if [ ! -r "${SCR_PATH}" ]; then exit 1; fi
 
     for MANIFEST in $(find ${JENKINS_HOME}/plugins/*/META-INF/ -name "MANIFEST.MF" 2>/dev/null); do
 
@@ -52,10 +54,7 @@ function plugins_col(){
         PLUGIN_VERSION=$(echo ${PLUGIN_VERSION/$'\r'/} | sed 's/ *$//g')
 
         for PLUGIN_FILE in $(find ${JENKINS_HOME}/plugins/ -name "$SHORT_NAME.[hj]pi" 2>/dev/null); do
-            if [ $PLUGIN_FILE ]; then
-                PLUGIN_SHA1SUM=$(echo $(sha1sum $PLUGIN_FILE | cut -d " " -f 1) | sed 's/ *$//g')
-                break
-            fi
+            if [ $PLUGIN_FILE ]; then break; fi
         done
 
         for PLUGIN_DISABLED in $(find ${JENKINS_HOME}/plugins/ -name "$SHORT_NAME.[hj]pi.disabled" 2>/dev/null); do
@@ -66,7 +65,9 @@ function plugins_col(){
             if [ $PLUGIN_PINNED ]; then break; fi
         done
 
-        echo "# ${SHORT_NAME}|${PLUGIN_VERSION}|${PLUGIN_FILE}|${PLUGIN_SHA1SUM}|${PLUGIN_DISABLED}|${PLUGIN_PINNED}" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
+        if [ $PLUGIN_FILE ]; then PLUGIN_SHA1SUM=$(echo $(sha1sum $PLUGIN_FILE | cut -d " " -f 1) | sed 's/ *$//g'); fi
+
+        echo "# ${SHORT_NAME}|${PLUGIN_VERSION}|${PLUGIN_FILE}|${PLUGIN_SHA1SUM}|${PLUGIN_DISABLED}|${PLUGIN_PINNED}" >> ${SCR_PATH}
         SHORT_NAME=; PLUGIN_VERSION=; PLUGIN_FILE=; PLUGIN_SHA1SUM=; PLUGIN_DISABLED=; PLUGIN_PINNED=;
         echo -n . # progress
 
@@ -79,25 +80,27 @@ function plugins_col(){
 # $3 - PLUGIN_SHA1SUM
 function plugins_check(){
 
-    if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then return 2; fi
+    if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then exit 1; fi
 
     local SHORT_NAME=$1
     local PLUGIN_VERSION=$2
     local PLUGIN_SHA1SUM=$3
 
-    PLUGIN_INFO_STR=$(curl -k -sS -L ${REPO_URL}/download/plugins/${SHORT_NAME}/ | sed 's/<\/*[^>]*>//g' | grep -i "^${PLUGIN_VERSION}")
+    PLUGIN_INFO_STR=$(curl -k -s -L ${REPO_URL}/download/plugins/${SHORT_NAME}/ | sed 's/<\/*[^>]*>//g' | grep -i "^${PLUGIN_VERSION}")
     if [ "$(echo ${PLUGIN_INFO_STR} | grep "${PLUGIN_SHA1SUM}")" ] ; then return 0; else return 1; fi
 
 }
 
 function plugins_gen(){
 
-    if [ ! -r "${JENKINS_HOME}/plugins/${SCR_NAME}" ]; then exit 1; fi
+    plugins_count=0
 
-    echo "mkdir -p ${JENKINS_HOME}/plugins" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
+    if [ ! -r "${SCR_PATH}" ]; then exit 1; fi
+
+    echo "mkdir -p ${JENKINS_HOME}/plugins" >> ${SCR_PATH}
 
     while read SECTION; do
-        if [[ "$SECTION" =~ ^#\ .*$ ]]; then
+        if [[ "$SECTION" =~ ^#!.*$ ]]; then
 
             while read COL; do
                 if [[ ! $COL =~ ^#\ .*$ ]]; then break; fi
@@ -118,25 +121,29 @@ function plugins_gen(){
                     plugins_check $SHORT_NAME $PLUGIN_VERSION $PLUGIN_SHA1SUM
 
                     if [ $? -eq 0 ]; then
-                        echo "echo ${SHORT_NAME}.${PLUGIN_VERSION} [checksum: ${PLUGIN_SHA1SUM} OK]" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
+                        echo "echo \"${SHORT_NAME} ${PLUGIN_VERSION} [SHA-1: ${PLUGIN_SHA1SUM} OK]\"" >> ${SCR_PATH}
                     else
-                        echo "echo ${SHORT_NAME}.${PLUGIN_VERSION} [checksum: ${PLUGIN_SHA1SUM} FAIL]" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
+                        echo "echo \"${SHORT_NAME} ${PLUGIN_VERSION} [SHA-1: ${PLUGIN_SHA1SUM} ERR]\"" >> ${SCR_PATH}
                     fi
 
-                    echo "curl -k -L --progress-bar \"${REPO_URL}/download/plugins/${SHORT_NAME}/${PLUGIN_VERSION}/${SHORT_NAME}.hpi\" -o \"${PLUGIN_FILE}\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}
-                    if [ ! -z $PLUGIN_DISABLED ]; then echo "touch \"$PLUGIN_DISABLED\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}; fi
-                    if [ ! -z $PLUGIN_PINNED ]; then echo "touch \"$PLUGIN_PINNED\"" >> ${JENKINS_HOME}/plugins/${SCR_NAME}; fi
+                    echo "curl -k -L -# \"${REPO_URL}/download/plugins/${SHORT_NAME}/${PLUGIN_VERSION}/${SHORT_NAME}.hpi\" -o \"${PLUGIN_FILE}\"" >> ${SCR_PATH}
+                    if [ ! -z $PLUGIN_DISABLED ]; then echo "touch \"$PLUGIN_DISABLED\"" >> ${SCR_PATH}; fi
+                    if [ ! -z $PLUGIN_PINNED ]; then echo "touch \"$PLUGIN_PINNED\"" >> ${SCR_PATH}; fi
 
                 fi
 
                 SHORT_NAME=; PLUGIN_VERSION=; PLUGIN_FILE=; PLUGIN_SHA1SUM=; PLUGIN_DISABLED=; PLUGIN_PINNED=;
                 echo -n . # progress
 
+                plugins_count=$((plugins_count+1))
+
            done
 
         fi
 
-    done < ${JENKINS_HOME}/plugins/${SCR_NAME}
+    done < ${SCR_PATH}
+
+    if [ $plugins_count -eq 0 ]; then exit 1; fi
 
 }
 
@@ -144,7 +151,9 @@ function main(){
 
     cd "$JENKINS_HOME"
 
-    cat <<EOF > ${JENKINS_HOME}/plugins/${SCR_NAME}
+    if [ ! -d $SCR_FOLD ]; then mkdir -p $SCR_FOLD; fi
+
+    cat <<EOF > ${SCR_PATH}
 #!/bin/sh -e
 EOF
 
