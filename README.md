@@ -16,6 +16,9 @@
 su -s /bin/bash jenkins
 cd /var/lib/jenkins
 
+ssh-keygen -b 2048 -t rsa -C "jenkins@$(hostname -f)"
+cat ~/.ssh/id_rsa.pub
+
 git init
 git config --global user.name Jenkins
 git config --global user.email "jenkins@$(hostname -f)"
@@ -30,9 +33,7 @@ git add .gitignore
 git commit -m 'Jenkins init commit'
 
 git remote add origin PASTE_HERE_REPO_LINK_FROM_GITLAB
-
-ssh-keygen
-cat ~/.ssh/id_rsa.pub
+git remote show origin
 ```
 
 ### Gitlab:
