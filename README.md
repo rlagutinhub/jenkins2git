@@ -56,7 +56,7 @@ cat ~/.ssh/id_rsa.pub
 * Settings => Members: decrease Jenkins permissions from Maintainer to Developer
 * Settings => Repository => Protected branches: master => Allow to push: change from Maintainers to Maintainers+Developers
 
-### Resotore to current commit:
+### Restore to current (last) commit:
 
 ```
 systemctl stop jenkins
@@ -92,7 +92,7 @@ systemctl start jenkins
 tail -f /var/log/jenkins/jenkins.log
 ```
 
-### Resotore to old commit:
+### Restore to old commit:
 
 ```
 systemctl stop jenkins
