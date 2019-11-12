@@ -142,6 +142,13 @@ exit
 systemctl start jenkins
 tail -f /var/log/jenkins/jenkins.log
 ```
+***
+
+![alt text](https://raw.githubusercontent.com/rlagutinhub/jenkins2git/master/screen1.png)
+![alt text](https://raw.githubusercontent.com/rlagutinhub/jenkins2git/master/screen2.png)
+![alt text](https://raw.githubusercontent.com/rlagutinhub/jenkins2git/master/screen3.png)
+
+***
 
 ### See also:
 
