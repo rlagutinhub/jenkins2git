@@ -33,7 +33,7 @@ git add .gitignore
 git commit -m 'Jenkins init commit'
 
 git remote add origin PASTE_HERE_REPO_LINK_FROM_GITLAB
-git remote show origin
+git remote show origin # approve host key verification
 ```
 
 ### Gitlab:
@@ -75,7 +75,7 @@ git config --global user.email "jenkins@$(hostname -f)"
 git config --global -l
 
 git remote add origin PASTE_HERE_REPO_LINK_FROM_GITLAB
-git remote show origin
+git remote show origin # approve host key verification
 
 git fetch origin
 git branch
@@ -111,7 +111,7 @@ git config --global user.email "jenkins@$(hostname -f)"
 git config --global -l
 
 git remote add origin PASTE_HERE_REPO_LINK_FROM_GITLAB
-git remote show origin
+git remote show origin # approve host key verification
 
 git fetch origin
 git branch
