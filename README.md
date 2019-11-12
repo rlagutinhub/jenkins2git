@@ -2,9 +2,23 @@
 
 * Periodic backup of Jenkins configs to Git
 
-### Create user and repository in Gitlab:
+### Create Jenkins user ssh keys:
+
+```
+su -s /bin/bash jenkins
+cd /var/lib/jenkins
+
+ssh-keygen -b 2048 -t rsa -C "jenkins@$(hostname -f)"
+cat ~/.ssh/id_rsa.pub
+```
+
+### Create user and add ssh key in Gitlab:
 
 * Create user "jenkins"
+* Users => Jenkins => Impersonate => Personal Settings => SSH keys: paste contents of id_rsa.pub here
+
+### Create repository in Gitlab:
+
 * Create repository "jenkins-configs"
 * Copy repo link to clipboard
 * Goto Repository => Settings => Members
@@ -15,9 +29,6 @@
 ```
 su -s /bin/bash jenkins
 cd /var/lib/jenkins
-
-ssh-keygen -b 2048 -t rsa -C "jenkins@$(hostname -f)"
-cat ~/.ssh/id_rsa.pub
 
 git init
 git config --global user.name Jenkins
@@ -38,10 +49,6 @@ git status
 
 git push origin master
 ```
-
-### Gitlab:
-
-* Users => Jenkins => Impersonate => Personal Settings => SSH keys: paste contents of id_rsa.pub here
 
 ### Create job in Jenkins GUI:
 
