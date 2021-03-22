@@ -2,7 +2,7 @@
 
 # NAME:   JENKINS2GIT.SH
 # DESC:   BACKUP JENKINS MASTER CONFIG TO GIT
-# DATE:   12-11-2019
+# DATE:   22-03-2021
 # LANG:   BASH
 # AUTHOR: LAGUTIN R.A.
 # EMAIL:  RLAGUTIN@MTA4.RU
@@ -163,7 +163,8 @@ EOF
     ls -1d *.xml jobs/*/*.xml nodes/* secrets/* users/* userContent/* plugins/${SCR_NAME} 2>/dev/null | grep -v '^queue.xml$' | xargs -r -d '\n' git add --
 
     # Track deleted files
-    LANG=C git status | awk '$1 == "deleted:" { print $2; }' | xargs -r git rm --ignore-unmatch
+    # LANG=C git status | awk '$1 == "deleted:" { print $2; }' | xargs -r git rm --ignore-unmatch
+    LANG=C git status --porcelain | awk '$1 == "D" { $1=""; print }' | xargs -r git rm --ignore-unmatch
 
     LANG=C git status | grep -q '^nothing to commit' || {
         git commit -m "Automated Jenkins commit at $(date '+%Y-%m-%d %H:%M:%S')"
