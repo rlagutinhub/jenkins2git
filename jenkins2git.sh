@@ -86,7 +86,7 @@ function plugins_check(){
     local PLUGIN_VERSION=$2
     local PLUGIN_SHA1SUM=$3
 
-    PLUGIN_INFO_STR=$(curl -k -s -L ${REPO_URL}/download/plugins/${SHORT_NAME}/ | sed 's/<\/*[^>]*>//g' | grep -i "^${PLUGIN_VERSION}")
+    PLUGIN_INFO_STR=$(curl -k -s -L ${REPO_URL}/download/plugins/${SHORT_NAME}/ | sed 's/<\/*[^>]*>//g' | grep -A 3 -i "^${PLUGIN_VERSION}")
     if [ "$(echo ${PLUGIN_INFO_STR} | grep "${PLUGIN_SHA1SUM}")" ] ; then return 0; else return 1; fi
 
 }
@@ -166,7 +166,7 @@ EOF
     # LANG=C git status | awk '$1 == "deleted:" { print $2; }' | xargs -r git rm --ignore-unmatch
     LANG=C git status --porcelain | awk '$1 == "D" { $1=""; print }' | xargs -r git rm --ignore-unmatch
 
-    LANG=C git status | grep -q '^nothing to commit' || {
+    LANG=C git status | egrep -q '^nothing .*to commit' || {
         git commit -m "Automated Jenkins commit at $(date '+%Y-%m-%d %H:%M:%S')"
         git push -q -u origin master
     }
